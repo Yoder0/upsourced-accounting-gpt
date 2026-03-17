@@ -10,12 +10,11 @@ No install required — open the link in any browser and start asking questions.
 
 ## How It Works
 
-1. PDFs in `docs/` are chunked and stored in a local ChromaDB vector database
+1. PDFs in `docs/` are chunked and stored in a ChromaDB vector database on the server
 2. When you ask a question, the app combines semantic retrieval with exact-term reranking so carrier names, product acronyms, and worked examples are easier to surface together
 3. Those chunks are passed to Claude as context, which generates a step-by-step answer with source citations
 4. **Conversation memory** — The last 3 exchanges are passed to Claude so follow-up questions (e.g., "can you explain step 3 in more detail?") work naturally within a session
-5. **Optional spreadsheet** — You can upload an Excel file in the sidebar; its data is included as context for questions about that file
-6. No document content ever leaves your machine — embeddings are generated locally by ChromaDB's built-in model
+5. **Optional spreadsheet/PDF upload** — You can attach files in the sidebar; their data is included as context alongside the knowledge base
 
 ## Assistant Operating Model (Prompt Redesign)
 
@@ -135,13 +134,6 @@ upsourced-accounting-gpt/
 └── .gitignore
 ```
 
-## Adding New Documents
-
-1. Add PDF files to `docs/`
-2. Re-run ingestion: `python -m src.ingest`
-3. Restart the Streamlit app if it's already running
-
-If you add or revise SOP PDFs, re-run ingestion before testing the change. Retrieval will not pick up new content until the Chroma database is rebuilt.
 
 ## Using Call Transcripts (Grain, Zoom, etc.)
 
@@ -152,17 +144,22 @@ Raw `.srt` subtitle files don't ingest well — the timestamp lines pollute the 
 3. Export as PDF → File → Download → PDF
 4. Drop the PDF in `docs/` and re-run ingestion
 
-## Adding Documents (After Deployment)
+## Adding Documents
 
-When you add new PDFs to `docs/`, push them to GitHub and reboot the app:
+The current workflow requires a git push. A Google Drive sync is planned that will eliminate this step entirely (see `PLAN.md`).
 
-```bash
-git add docs/
-git commit -m "Add [document name]"
-git push
-```
+**Until Drive sync is set up:**
 
-Then in the [Streamlit Cloud dashboard](https://share.streamlit.io), click **Reboot app**. The app will auto-ingest the new files on restart.
+1. Add the PDF to `docs/`
+2. Push to GitHub:
+   ```bash
+   git add docs/
+   git commit -m "Add [document name]"
+   git push
+   ```
+3. In the [Streamlit Cloud dashboard](https://share.streamlit.io), click **Reboot app**
+
+The app auto-ingests on restart — no manual ingestion command needed.
 
 ## Known Limitations
 
@@ -181,10 +178,12 @@ Use the scenarios in `evals/health_benefits_regression_cases.json` when you chan
 - Three-pay-period timing variances
 - Pending carrier credits after employee terminations
 
-## Future Roadmap
+## Roadmap
 
-- Live Google Drive sync for automatic doc updates
-- Slack bot integration for team-wide access
-- Danswer/Onyx migration for production deployment
-- Client-specific knowledge bases
-- Usage analytics and training gap reporting
+See `PLAN.md` for detailed implementation plans. In priority order:
+
+1. **Google Drive document sync** — Drop a PDF in a shared Drive folder; app picks it up automatically. No git required.
+2. **Conversation logging to Google Sheets** — Every Q&A appended to a sheet for review and quality tracking.
+3. **Persistent vector store (Pinecone)** — Eliminates the ~60 second cold-start rebuild; embeddings stored permanently in the cloud.
+4. **Authentication** — Google OAuth or password gate to restrict access beyond the internal team.
+5. **Client-specific knowledge bases** — Separate document sets per client.
