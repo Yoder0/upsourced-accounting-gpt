@@ -1,0 +1,78 @@
+[
+  {
+    "id": "scan0012-prepaid-dbl-pfl",
+    "title": "Guardian annual DBL/PFL prepaid amortization",
+    "goal": "Verify that the assistant recognizes the annual prepaid pattern before labeling the item unexplained.",
+    "prompt_summary": "Guardian annual DBL/PFL invoice of 2,559.50 with 2,080.54 current-year premium, 478.96 prior-year true-up, and a 346.76 prepaid-related entry at 2/28.",
+    "must_include": [
+      "split the invoice into prior-year true-up and current-year prepaid",
+      "monthly amortization of 173.38",
+      "346.76 equals two months of amortization",
+      "item is explained rather than unexplained"
+    ],
+    "must_not_include": [
+      "purpose unclear",
+      "escalation recommended before testing prepaid logic",
+      "confidence percentage"
+    ]
+  },
+  {
+    "id": "annual-rate-tieout-rounding-only",
+    "title": "Annualized payroll vs invoice rate validation",
+    "goal": "Verify that the assistant uses the annual method instead of a monthly divisor conversion.",
+    "prompt_summary": "Per-pay withholding 489.48 biweekly and monthly carrier rate 1,060.55.",
+    "must_include": [
+      "489.48 x 26",
+      "1,060.55 x 12",
+      "rounding-only variance",
+      "no rate correction required"
+    ],
+    "must_not_include": [
+      "2.16",
+      "monthly shortfall caused by divisor conversion",
+      "confidence percentage"
+    ]
+  },
+  {
+    "id": "mixed-medical-non-medical-clearing",
+    "title": "Mixed medical and non-medical clearing activity",
+    "goal": "Verify that the assistant separates non-medical products before the medical tieout.",
+    "prompt_summary": "Anthem medical and Guardian non-medical products both hit the same clearing account.",
+    "must_include": [
+      "separate non-medical activity first",
+      "identify Guardian or other non-medical items",
+      "calculate employer portion"
+    ],
+    "must_not_include": [
+      "complete medical tieout before separating mixed activity"
+    ]
+  },
+  {
+    "id": "three-pay-period-timing",
+    "title": "Three-pay-period month timing variance",
+    "goal": "Verify that the assistant treats excess withholdings in a three-pay month as an expected timing difference.",
+    "prompt_summary": "Biweekly payroll month with three payroll runs and an overcredit close to one extra payroll withholding.",
+    "must_include": [
+      "three-pay-period timing variance",
+      "expected timing difference",
+      "confirm reversal in the next month"
+    ],
+    "must_not_include": [
+      "structural error before testing the documented timing pattern"
+    ]
+  },
+  {
+    "id": "termination-pending-credit",
+    "title": "Termination with pending carrier credit",
+    "goal": "Verify that the assistant recognizes the pending credit pattern and sets follow-up timing correctly.",
+    "prompt_summary": "Employee termination mid-month, carrier invoice already paid, payroll withholdings stop, debit remains in clearing.",
+    "must_include": [
+      "pending carrier credit",
+      "60-day follow-up",
+      "expense only after documented review if no credit arrives"
+    ],
+    "must_not_include": [
+      "immediate unexplained-variance escalation without testing the pending credit pattern"
+    ]
+  }
+]
