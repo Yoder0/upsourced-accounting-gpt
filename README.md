@@ -2,6 +2,12 @@
 
 An internal AI assistant for accounting operations that answers questions about company procedures using your actual SOPs and internal documentation. Built as a RAG (Retrieval-Augmented Generation) proof of concept.
 
+## Live App
+
+**https://upsourced-accounting-gpt-zcbb7bwccar3xsosxsnnh5.streamlit.app/**
+
+No install required — open the link in any browser and start asking questions. The first load after a period of inactivity shows a ~60 second spinner while the knowledge base rebuilds; subsequent questions in the same session are fast.
+
 ## How It Works
 
 1. PDFs in `docs/` are chunked and stored in a local ChromaDB vector database
@@ -146,12 +152,24 @@ Raw `.srt` subtitle files don't ingest well — the timestamp lines pollute the 
 3. Export as PDF → File → Download → PDF
 4. Drop the PDF in `docs/` and re-run ingestion
 
+## Adding Documents (After Deployment)
+
+When you add new PDFs to `docs/`, push them to GitHub and reboot the app:
+
+```bash
+git add docs/
+git commit -m "Add [document name]"
+git push
+```
+
+Then in the [Streamlit Cloud dashboard](https://share.streamlit.io), click **Reboot app**. The app will auto-ingest the new files on restart.
+
 ## Known Limitations
 
-- **POC** — Not production-ready; no auth, no multi-user support
-- **Manual doc sync** — You must re-run ingestion when docs change
+- **No authentication** — Anyone with the URL can use the app. Suitable for internal team use; add a password gate or Google OAuth if broader access control is needed
+- **Manual doc sync** — New PDFs require a git push + reboot (see above)
 - **PDF only** — No native support for `.docx`, `.txt`, or Google Docs
-- **Local only** — ChromaDB runs on a single machine; not shared across team members
+- **Session memory only** — Conversation history resets on page refresh; each browser session is independent
 
 ## Regression Pack
 

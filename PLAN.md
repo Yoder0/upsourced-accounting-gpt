@@ -8,6 +8,26 @@
 
 ---
 
+## Status — Mar 17, 2026
+
+**Deployment complete.** The app is live and accessible to anyone with the link.
+
+**Live URL:** https://upsourced-accounting-gpt-zcbb7bwccar3xsosxsnnh5.streamlit.app/
+
+| What | Status |
+|---|---|
+| Model name verified (`claude-sonnet-4-20250514`) | Done |
+| ChromaDB `@st.cache_resource` caching added to `src/retrieval.py` | Done |
+| Auto-ingestion block added to `app.py` | Done |
+| `.gitignore` updated (chroma_db excluded, `.streamlit/config.toml` committed) | Done |
+| `.streamlit/config.toml` created | Done |
+| GitHub repo created: `Yoder0/upsourced-accounting-gpt` (private) | Done |
+| Pushed to GitHub — all docs/ PDFs included, `.env` excluded | Done |
+| Deployed to Streamlit Community Cloud with `ANTHROPIC_API_KEY` secret | Done |
+| Live and tested | Done |
+
+---
+
 ## Overview of What We're Doing
 
 Right now the app only runs on your laptop. To make it shareable:
@@ -369,15 +389,15 @@ Open the Google Sheet at any time to see all conversations in real time. You can
 
 ## Checklist Summary
 
-- [ ] Verify and fix `CLAUDE_MODEL` name in `src/config.py`
-- [ ] Add `@st.cache_resource` ChromaDB client caching in `src/retrieval.py`
-- [ ] Add auto-ingestion block to `app.py`
-- [ ] Update `.gitignore` (allow `.streamlit/config.toml`, keep `secrets.toml` ignored)
-- [ ] Create `.streamlit/config.toml`
-- [ ] Create GitHub repo (private) and push all files including `docs/`
-- [ ] Deploy on Streamlit Community Cloud with API key in Secrets
-- [ ] Test a question end-to-end on the live URL
-- [ ] Share URL with boss
+- [x] Verify and fix `CLAUDE_MODEL` name in `src/config.py` — confirmed `claude-sonnet-4-20250514` is valid
+- [x] Add `@st.cache_resource` ChromaDB client caching in `src/retrieval.py`
+- [x] Add auto-ingestion block to `app.py`
+- [x] Update `.gitignore` (allow `.streamlit/config.toml`, keep `secrets.toml` ignored)
+- [x] Create `.streamlit/config.toml`
+- [x] Create GitHub repo (`Yoder0/upsourced-accounting-gpt`, private) and push all files including `docs/`
+- [x] Deploy on Streamlit Community Cloud with API key in Secrets
+- [x] Test a question end-to-end on the live URL
+- [x] Share URL — https://upsourced-accounting-gpt-zcbb7bwccar3xsosxsnnh5.streamlit.app/
 - [ ] Create Google Sheet with headers and note the Spreadsheet ID
 - [ ] Create Google Cloud service account and enable Sheets API
 - [ ] Share the Google Sheet with the service account email
