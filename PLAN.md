@@ -248,22 +248,33 @@ elif drive_files_to_ingest:
 
 ## Future: Persistent Vector Store (Pinecone)
 
-The only complete fix for cold-start re-ingestion delay is moving the vector database out of Streamlit's ephemeral disk into a persistent cloud service.
+### When this becomes urgent
 
-**How it changes things:**
+Two scale thresholds to watch:
+
+| Doc count | Problem |
+|---|---|
+| ~30+ PDFs | Cold-start rebuild after Streamlit sleep climbs past 3–4 minutes — unacceptable wait for a team member hitting a woken app |
+| ~50+ PDFs | The keyword scoring in `src/retrieval.py` scans every chunk on every query. At ~1,500+ chunks this adds 3–5 seconds of latency per question |
+
+Both problems disappear with Pinecone. At the current doc count (~10 PDFs) neither is an issue yet, but the Drive sync plan will accelerate how fast docs accumulate. Revisit this when the folder crosses ~25–30 PDFs.
+
+### How it changes things
+
 - ChromaDB (local, wiped on sleep) → Pinecone (cloud-hosted, always available)
-- Cold start goes from ~90 seconds to ~2 seconds
-- Embeddings are generated once and stored permanently
-- Incremental ingestion becomes the default — new docs are added to the index, nothing is rebuilt
+- Cold start goes from minutes to ~2 seconds — embeddings are stored permanently, nothing to rebuild
+- Incremental ingestion is the default — new docs add to the index, nothing is rebuilt
+- Keyword scan replaced by Pinecone's native metadata filtering, which is fast regardless of index size
 
-**What it requires:**
-- Free Pinecone account (free tier: 1 index, 100k vectors — sufficient for current doc set)
+### What it requires
+
+- Free Pinecone account (free tier: 1 index, 100k vectors — enough for ~3,000 PDFs)
 - `pinecone-client` added to `requirements.txt`
 - `PINECONE_API_KEY` added to Streamlit Secrets
 - Rewrite `src/ingest.py` and `src/retrieval.py` to use Pinecone instead of ChromaDB
-- Embeddings would need to come from an external model (OpenAI `text-embedding-3-small` or Anthropic) since ChromaDB's built-in model can't be used with Pinecone
+- Embeddings must come from an external model since ChromaDB's built-in embedder can't be used with Pinecone — `text-embedding-3-small` from OpenAI (~$0.02 per 1M tokens, negligible cost) or Anthropic's embedding API
 
-This is a meaningful rewrite of the retrieval layer but unlocks the production-quality experience. Worth doing after the Drive sync is stable.
+This is a meaningful rewrite of the retrieval layer (~4–6 hours) but unlocks production-quality performance. Worth doing after the Drive sync is stable and the doc count starts climbing.
 
 ---
 
